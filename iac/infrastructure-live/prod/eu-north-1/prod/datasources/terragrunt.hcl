@@ -9,5 +9,5 @@ terraform {
 }
 
 inputs = {
-  acm_domain = "*.project-name.tech"
+  acm_domain = "*.YOUR-DOMAIN.com" # Replace with your domain name (e.g., *.example.com)
 }

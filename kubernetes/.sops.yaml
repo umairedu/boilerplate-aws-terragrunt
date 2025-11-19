@@ -1,3 +1,4 @@
 creation_rules:
   - path_regex: 'charts\/.*\/production\/(.*).yaml'
-    kms: 'arn:aws:kms:eu-west-1:aws-account-id:alias/project-name_prod_app_secrets'
+    # Replace with your KMS key ARN: arn:aws:kms:REGION:ACCOUNT-ID:alias/YOUR-PROJECT-NAME_PROD_APP_SECRETS
+    kms: 'arn:aws:kms:YOUR-AWS-REGION:YOUR-AWS-ACCOUNT-ID:alias/YOUR-PROJECT-NAME_PROD_APP_SECRETS'

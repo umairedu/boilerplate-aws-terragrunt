@@ -1,4 +1,4 @@
 apiVersion: v2
-name: project-name-generic-helm
+name: generic-helm-chart
 description: A generic helm chart for all sort of applications
 version: 0.0.1

@@ -7,3 +7,4 @@ terraform.rc
 *.tfstate.*
 **/.terraform/*
 /.idea
+POST_OUTLINE.md

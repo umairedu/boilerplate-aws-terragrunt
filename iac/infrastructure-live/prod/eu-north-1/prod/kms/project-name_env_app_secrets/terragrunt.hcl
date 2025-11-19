@@ -15,7 +15,7 @@ terraform {
 
 
 inputs = {
-  description             = "Helm secrets for project-name Apps"
+  description             = "Helm secrets for ${include.root.locals.environment_vars.locals.project} Apps"
   deletion_window_in_days = 20
   enable_key_rotation     = false
   alias                   = format("alias/%s", replace("${basename(get_terragrunt_dir())}", "env", "${include.root.locals.env}"))

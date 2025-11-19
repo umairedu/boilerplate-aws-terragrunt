@@ -19,7 +19,8 @@ inputs = {
   create_random_password = false
   ignore_secret_changes  = true
 
-  secret_string = get_env("project-name_GITHUB_ACCESS_TOKEN")
+  # Set environment variable: export YOUR-PROJECT-NAME_GITHUB_ACCESS_TOKEN=your-token
+  secret_string = get_env("${include.root.locals.environment_vars.locals.project}_GITHUB_ACCESS_TOKEN")
 
   tags = merge(
     include.root.locals.base_tags,

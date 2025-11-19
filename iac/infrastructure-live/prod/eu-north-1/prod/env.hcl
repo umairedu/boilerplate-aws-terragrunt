@@ -2,10 +2,8 @@
 # feed forward to the child modules.
 locals {
   environment                = "prod"
-  team                       = "DevOps"
-  project                    = "project-name"
-  cidr                       = "10.9.0.0/16"
+  team                       = "DevOps"            # Replace with your team name
+  project                    = "YOUR-PROJECT-NAME" # Replace with your project name
+  cidr                       = "10.9.0.0/16"       # Replace with your VPC CIDR block
   bastion_host_instance_type = "t3.nano"
-
-
 }

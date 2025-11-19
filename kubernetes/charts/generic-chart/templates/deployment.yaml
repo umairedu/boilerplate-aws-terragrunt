@@ -56,7 +56,7 @@ spec:
       topologySpreadConstraints:
       {{ toYaml .Values.deployment.topologySpreadConstraints | indent 8 }}
       {{- end }}
-      {{- if .Values.deployment.imagePullSecrets }}      
+      {{- if .Values.deployment.imagePullSecrets }}
       imagePullSecrets:
       - name: {{ .Values.deployment.imagePullSecrets }}
       {{- end }}
@@ -65,7 +65,7 @@ spec:
         image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag }}"
         imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
         {{- if .Values.deployment.containerSecurityContext }}
-        securityContext:      
+        securityContext:
 {{ toYaml .Values.deployment.containerSecurityContext | indent 10 }}
           {{- end }}
         {{- if .Values.deployment.envFrom }}
@@ -123,7 +123,7 @@ spec:
         startupProbe:
 {{ toYaml .Values.deployment.startupProbe | indent 10 }}
 {{- end }}
-      {{- if or (.Values.deployment.volumeMounts) (and (eq .Values.persistence.enabled true) (eq .Values.persistence.mountPVC true) )}} 
+      {{- if or (.Values.deployment.volumeMounts) (and (eq .Values.persistence.enabled true) (eq .Values.persistence.mountPVC true) )}}
         volumeMounts:
         {{- if (eq .Values.persistence.mountPVC true) }}
         - mountPath: {{ .Values.persistence.mountPath }}
@@ -141,10 +141,10 @@ spec:
 {{ toYaml .Values.deployment.additionalContainers | indent 6 }}
         {{- end }}
         {{- if .Values.deployment.securityContext }}
-      securityContext:      
+      securityContext:
 {{ toYaml .Values.deployment.securityContext | indent 8 }}
           {{- end }}
-      {{- if or (.Values.deployment.volumes) (and (eq .Values.persistence.enabled true) (eq .Values.persistence.mountPVC true) )}} 
+      {{- if or (.Values.deployment.volumes) (and (eq .Values.persistence.enabled true) (eq .Values.persistence.mountPVC true) )}}
       volumes:
         {{- if (eq .Values.persistence.mountPVC true) }}
       - name: {{ template "application.name" . }}-data
@@ -154,7 +154,7 @@ spec:
         {{- if .Values.deployment.volumes }}
 {{ toYaml .Values.deployment.volumes | indent 6 }}
         {{- end }}
-      {{- end }}  
+      {{- end }}
       {{- if .Values.rbac.serviceAccount.name }}
       serviceAccountName: {{ .Values.rbac.serviceAccount.name }}
         {{- else }}

@@ -13,7 +13,7 @@ terraform {
   }
 }
 dependency "vpc" {
-  config_path = "../../vpc/project-name.env.vpc"
+  config_path = "../../vpc/YOUR-PROJECT-NAME.env.vpc"
   mock_outputs = {
     vpc_id = "vpc-0557d70b7766b7799"
   }

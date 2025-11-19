@@ -26,12 +26,13 @@ inputs = {
   private_repository            = true
   source_credential_auth_type   = "PERSONAL_ACCESS_TOKEN"
   source_credential_server_type = "GITHUB"
-  source_credential_token       = get_env("project-name_GITHUB_ACCESS_TOKEN")
-  source_version                = "main"
-  git_clone_depth               = "1"
+  # Set environment variable: export YOUR-PROJECT-NAME_GITHUB_ACCESS_TOKEN=your-token
+  source_credential_token = get_env("${include.root.locals.environment_vars.locals.project}_GITHUB_ACCESS_TOKEN")
+  source_version          = "main"
+  git_clone_depth         = "1"
 
   source_type       = "GITHUB"
-  source_location   = "https://github.com/project-name-tech/project-name.git"
+  source_location   = "https://github.com/YOUR-GITHUB-ORG/YOUR-REPO-NAME.git" # Replace with your GitHub repository
   github_token      = "github_token"
   github_token_type = "SECRETS_MANAGER"
 
@@ -61,7 +62,7 @@ inputs = {
   environment_variables = [
     {
       name  = "APP_NAME"
-      value = "project-name.prod.core"
+      value = "${include.root.locals.environment_vars.locals.project}.${include.root.locals.env}.core"
       type  = "PLAINTEXT"
     },
     {

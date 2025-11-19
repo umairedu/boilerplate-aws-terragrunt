@@ -560,6 +560,3 @@ resource "aws_codebuild_webhook" "main" {
   }
   depends_on = [aws_codebuild_project.default]
 }
-
-
-

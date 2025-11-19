@@ -1,9 +1,9 @@
 # Name of the application.
-applicationName: "project-name-generic-helm"
-   
+applicationName: "YOUR-APP-NAME"
+
 # These labels will be added on all resources, and you can add additional labels from below on individual resource
 labels:
-  group: project-name-generic-helm
+  group: YOUR-APP-NAME
 deployment:
 
   # By default deploymentStrategy is set to rollingUpdate
@@ -13,13 +13,13 @@ deployment:
     rollingUpdate:
       maxUnavailable: 0
       maxSurge: 1
-  
-  # Select nodes to deploy which matches the following labels  
+
+  # Select nodes to deploy which matches the following labels
   nodeSelector:
-    # cloud.google.com/gke-nodepool: default-pool  
+    # cloud.google.com/gke-nodepool: default-pool
 
   # If needed to setup host aliases
-  hostAliases: 
+  hostAliases:
   # - ip: "127.0.0.1"
   #   hostnames:
   #   - "foo.local"
@@ -30,14 +30,14 @@ deployment:
   # - name: init-contaner
   #   image: busybox
   #   imagePullPolicy: IfNotPresent
-  #   command: ['/bin/sh']    
+  #   command: ['/bin/sh']
 
   # Additional labels for Deployment
   additionalLabels:
     # key: value
-  
+
   # Additional label added on pod which is used in Service's Label Selector
-  podLabels: 
+  podLabels:
     # env: prod
 
   # Annotations on deployments
@@ -67,17 +67,17 @@ deployment:
   env:
   # - name: ENVIRONMENT
   #   value: "dev"
-  
+
   # Volumes to be added to the pod
   volumes:
     # - name: config-volume
-    #   configMap:        
+    #   configMap:
     #     name: configmap-name
     # - name: configmap-volume
     #   configMap:
     #     name: '{{ template "application.name" . }}-configmap-nameSuffix'
     # - name: secret-volume
-    #   secret:        
+    #   secret:
     #     secretName: secret-name
     # - name: volume-name
     #   emptyDir: {}
@@ -85,7 +85,7 @@ deployment:
     #   persistentVolumeClaim:
     #     claimName: claim-name
 
-  # Mount path for Volumes 
+  # Mount path for Volumes
   volumeMounts:
     # - mountPath: /path
     #   name: volume-name
@@ -109,7 +109,7 @@ deployment:
   #          - ssd
 
   # Image of the app container
-  image: 
+  image:
     repository: repository/image-name
     tag: v1.0.0
     pullPolicy: IfNotPresent
@@ -154,7 +154,7 @@ deployment:
   # - name: sidecar-contaner
   #   image: busybox
   #   imagePullPolicy: IfNotPresent
-  #   command: ['/bin/sh']    
+  #   command: ['/bin/sh']
 
   # Security Context for the pod
   securityContext:
@@ -162,7 +162,7 @@ deployment:
     runAsUser: 1001
     runAsGroup: 3000
     fsGroup: 2000
-    
+
 
 # Add Storage volumes to the pods
 persistence:
@@ -199,14 +199,14 @@ service:
 # Ingress object for exposing services
 ingress:
   enabled: false
-  
+
   # Port of the service that serves pods
   servicePort: http
-  
+
   # List of host addresses to be exposed by this Ingress
   hosts:
     - chart-example.local
-  
+
   # Add annotations to this Ingress
   annotations:
     # kubernetes.io/ingress.class: external-ingress
@@ -232,12 +232,12 @@ rbac:
     # Additional Labels on service account
     additionalLabels:
       # key: value
-    
-    # Annotations on service account 
+
+    # Annotations on service account
     annotations:
       # key: value
 
-  existingRoles: 
+  existingRoles:
   # - name: springboot
 
   # Create Roles (Namespaced)
@@ -259,7 +259,7 @@ rbac:
   #     verbs:
   #     - get
 
-  existingClusterroles: 
+  existingClusterroles:
   # - name: springboot
   # Create ClusterRoles (Clusterwide)
   clusterroles:
@@ -283,15 +283,15 @@ rbac:
   #     - watch
 
 
-# Additional ConfigMaps  
+# Additional ConfigMaps
 configMap:
   enabled: false
-  additionalLabels: 
+  additionalLabels:
     # key: value
-  annotations: 
+  annotations:
     # key: value
   files:
-  # - nameSuffix: code-config    
+  # - nameSuffix: code-config
   #   data:
   #     key1: value1
   #     key2: value2
@@ -303,11 +303,11 @@ configMap:
 # Additional Secrets
 secret:
   enabled: false
-  additionalLabels: 
+  additionalLabels:
     # key: value
-  annotations: 
+  annotations:
     # key: value
-  files:    
+  files:
   # - nameSuffix: credentials
   #   data:
   #     secretKey1: secretValue1
@@ -320,7 +320,7 @@ secret:
 # Service Monitor to collect Prometheus metrices
 serviceMonitor:
   enabled: false
-  
+
   # Additional labels
   additionalLabels:
     # key: value
@@ -371,13 +371,13 @@ logging:
 
 # autoscaling is used for horizonal pod autoscaling
 autoscaling:
-# enabled is a boolean flag for enabling or disabling autoscaling 
+# enabled is a boolean flag for enabling or disabling autoscaling
   enabled: false
 # additionalLabels defines additional labels
-  additionalLabels: 
+  additionalLabels:
     # key: value
 # annotations defines annotations in key value pair
-  annotations: 
+  annotations:
     # key: value
 # minReplicas sets the minimum number of replicas
   minReplicas: 1
@@ -396,14 +396,14 @@ autoscaling:
 
 poddisruptionbudget:
   enabled: false # if you enable this, make sure your deployment creates atleast minAvailable+1 pods for no downtime deployment
-  minAvailable: 1 
+  minAvailable: 1
 
 application:
   enabled: false
   argocd_namespace: argocd-install-namespace
   deployment_namespace: default
   repo_path: infra/kubernetes/charts
-  repoURL: git@github.com:umairedu/onboarding-project.git
+  repoURL: git@github.com:YOUR-GITHUB-ORG/YOUR-REPO-NAME.git  # Replace with your repository URL
   branch: master
   environment: production
   helm:

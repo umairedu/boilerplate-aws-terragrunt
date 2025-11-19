@@ -15,10 +15,10 @@ terraform {
 }
 
 dependencies {
-  paths = ["../../vpc/project-name.env.vpc/",
+  paths = ["../../vpc/YOUR-PROJECT-NAME.env.vpc/",
     "../../datasources/",
-    "../../security-groups/project-name.env.ec2.bastion-host",
-    "../../keypair/project-name.env.bastion-host"
+    "../../security-groups/YOUR-PROJECT-NAME.env.ec2.bastion-host",
+    "../../keypair/YOUR-PROJECT-NAME.env.bastion-host"
   ]
 }
 
@@ -33,7 +33,7 @@ dependency "datasources" {
 }
 
 dependency "vpc" {
-  config_path = "../../vpc/project-name.env.vpc/"
+  config_path = "../../vpc/YOUR-PROJECT-NAME.env.vpc/"
   mock_outputs = {
     vpc_id         = "vpc-0557d70b7766b7799"
     public_subnets = ["subnet-0d8ff9627adc20aca", "subnet-0d8ff9627adc20acb"]
@@ -43,7 +43,7 @@ dependency "vpc" {
 }
 
 dependency "bastion_host_sg" {
-  config_path = "../../security-groups/project-name.env.ec2.bastion-host"
+  config_path = "../../security-groups/YOUR-PROJECT-NAME.env.ec2.bastion-host"
   mock_outputs = {
     security_group_id = "87c6c06"
   }
@@ -51,7 +51,7 @@ dependency "bastion_host_sg" {
 }
 
 dependency "bastion_host_keypair" {
-  config_path = "../../keypair/project-name.env.bastion-host"
+  config_path = "../../keypair/YOUR-PROJECT-NAME.env.bastion-host"
   mock_outputs = {
     key_pair_name = "my-fake-key"
   }

@@ -1,6 +1,6 @@
 # Name of the application.
 applicationName: "YOUR-APP-NAME"
-environment: production
+environment: staging
 
 # These labels will be added on all resources, and you can add additional labels from below on individual resource
 labels:
@@ -112,7 +112,7 @@ deployment:
 
   # Image of the app container
   image:
-    repository: YOUR-AWS-ACCOUNT-ID.dkr.ecr.YOUR-AWS-REGION.amazonaws.com/YOUR-PROJECT-NAME.prod.core  # Replace with your ECR repository URL
+    repository: YOUR-AWS-ACCOUNT-ID.dkr.ecr.YOUR-AWS-REGION.amazonaws.com/YOUR-PROJECT-NAME.staging.core  # Replace with your ECR repository URL
     tag: v1.0.0
     pullPolicy: IfNotPresent
 
@@ -429,5 +429,5 @@ application:
   branch: master
   helm:
     valueFiles:
-      - production/values.yaml
-      - secrets://production/values-enc.yaml
+      - staging/values.yaml
+      - secrets://staging/values-enc.yaml
