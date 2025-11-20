@@ -8,3 +8,4 @@ terraform.rc
 **/.terraform/*
 /.idea
 POST_OUTLINE.md
+.terraform

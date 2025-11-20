@@ -1,0 +1,83 @@
+configs:
+  repositories:
+    private-helm-repo:
+      url: https://github.com/YOUR-GITHUB-ORG/YOUR-REPO-NAME.git  # Replace with your repository URL
+      name: default
+      type: git
+      username: not-used
+  cm:
+    create: true
+    helm.enableSecrets: "true"
+    helm.valuesFileSchemes: http, https, secrets
+
+repoServer:
+  env:
+  - name: HELM_PLUGINS
+    value: /gitops-tools/helm-plugins/
+  - name: HELM_SECRETS_CURL_PATH
+    value: /gitops-tools/curl
+  - name: HELM_SECRETS_SOPS_PATH
+    value: /gitops-tools/sops
+  - name: HELM_SECRETS_VALS_PATH
+    value: /gitops-tools/vals
+  - name: HELM_SECRETS_AGE_PATH
+    value: /gitops-tools/age
+  - name: HELM_SECRETS_KUBECTL_PATH
+    value: /gitops-tools/kubectl
+  - name: HELM_SECRETS_BACKEND
+    value: sops
+  - name: HELM_SECRETS_VALUES_ALLOW_SYMLINKS
+    value: "false"
+  - name: HELM_SECRETS_VALUES_ALLOW_ABSOLUTE_PATH
+    value: "true"
+  - name: HELM_SECRETS_VALUES_ALLOW_PATH_TRAVERSAL
+    value: "false"
+  - name: HELM_SECRETS_WRAPPER_ENABLED
+    value: "true"
+  - name: HELM_SECRETS_DECRYPT_SECRETS_IN_TMP_DIR
+    value: "true"
+  - name: HELM_SECRETS_HELM_PATH
+    value: /usr/local/bin/helm
+  - name: AWS_DEFAULT_REGION
+    value: YOUR-AWS-REGION
+  - name: AWS_REGION
+    value: YOUR-AWS-REGION
+  initContainers:
+  - args:
+    - |
+      # Simply copy pre-installed tools to shared volume
+      cp -r /gitops-tools/* /shared-tools/
+      echo "Tools copied successfully"
+    command:
+    - sh
+    - -c
+    image: docker.io/umairedu/argocd-tools
+    imagePullPolicy: IfNotPresent
+    name: copy-tools
+    volumeMounts:
+    - mountPath: /shared-tools
+      name: gitops-tools
+  volumeMounts:
+  - mountPath: /gitops-tools
+    name: gitops-tools
+  - mountPath: /usr/local/sbin/helm
+    name: gitops-tools
+    subPath: helm
+  - mountPath: /usr/local/bin/kubectl
+    name: gitops-tools
+    subPath: kubectl
+  - mountPath: /usr/local/bin/sops
+    name: gitops-tools
+    subPath: sops
+  - mountPath: /usr/local/bin/vals
+    name: gitops-tools
+    subPath: vals
+  - mountPath: /usr/local/bin/age
+    name: gitops-tools
+    subPath: age
+  - mountPath: /usr/local/bin/curl
+    name: gitops-tools
+    subPath: curl
+  volumes:
+  - emptyDir: {}
+    name: gitops-tools

@@ -20,12 +20,11 @@ inputs = {
     rules = [
       {
         rulePriority = 1,
-        description  = "Keep last 30 images",
+        description  = "Keep last 20 images",
         selection = {
-          tagStatus     = "tagged",
-          tagPrefixList = ["v"],
-          countType     = "imageCountMoreThan",
-          countNumber   = 30
+          tagStatus   = "any",
+          countType   = "imageCountMoreThan",
+          countNumber = 20
         },
         action = {
           type = "expire"

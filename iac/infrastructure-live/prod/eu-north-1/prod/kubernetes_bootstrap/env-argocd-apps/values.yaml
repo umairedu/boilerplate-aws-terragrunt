@@ -1,0 +1,18 @@
+applications:
+  YOUR-PROJECT-NAME-env-core:  # Replace with your project name
+    namespace: argocd
+    project: default
+    source:
+      repoURL: https://github.com/YOUR-GITHUB-ORG/YOUR-REPO-NAME.git  # Replace with your repository
+      targetRevision: main
+      path: infra/kubernetes/charts/YOUR-PROJECT-NAME-env-core-chart  # Replace with your chart path
+      helm:
+        valueFiles:
+          - YOUR-PROJECT-NAME-env-core/production/values.yaml  # Replace with your values path
+          - secrets://YOUR-PROJECT-NAME-env-core/production/values-enc.yaml  # Replace with your encrypted values path
+        releaseName: YOUR-PROJECT-NAME-env-core  # Replace with your release name
+    destination:
+      server: https://kubernetes.default.svc
+      namespace: default
+    syncPolicy: {}
+    revisionHistoryLimit: 5
