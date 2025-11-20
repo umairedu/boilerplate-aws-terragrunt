@@ -158,6 +158,14 @@ mv security-groups/project-name.env.ec2.bastion-host security-groups/my-awesome-
 mv keypair/project-name.env.bastion-host keypair/my-awesome-app.env.bastion-host
 mv codebuild/project-name-env-core codebuild/my-awesome-app-env-core
 mv iam-group/project-name.env.devops iam-group/my-awesome-app.env.devops
+mv iam-role/project-name.env.argocd.serviceaccount iam-role/my-awesome-app.env.argocd.serviceaccount
+mv iam-role/project-name.env.autoscaler.serviceaccount iam-role/my-awesome-app.env.autoscaler.serviceaccount
+mv iam-role/project-name.env.core.serviceaccount iam-role/my-awesome-app.env.core.serviceaccount
+mv iam-role/project-name.env.eks.serviceaccounts iam-role/my-awesome-app.env.eks.serviceaccounts
+mv iam-policy/project-name.env.argocd.serviceaccount iam-policy/my-awesome-app.env.argocd.serviceaccount
+mv iam-policy/project-name.env.autoscaler.serviceaccount iam-policy/my-awesome-app.env.autoscaler.serviceaccount
+mv iam-policy/project-name.env.core.serviceaccount iam-policy/my-awesome-app.env.core.serviceaccount
+mv kubernetes/serviceaccount/project-name-core kubernetes/serviceaccount/my-awesome-app-core
 ```
 
 **Important**: Directory names use the `.env.` pattern. If your project name is `my-awesome-app`, directories will be `my-awesome-app.env.vpc`, `my-awesome-app.env.eks`, etc.
@@ -174,12 +182,33 @@ export YOUR-PROJECT-NAME_GITHUB_ACCESS_TOKEN=your-github-token-here
 export my-awesome-app_GITHUB_ACCESS_TOKEN=ghp_xxxxxxxxxxxx
 ```
 
-### Step 5: Update CodeBuild Configuration
+### Step 5: Update ArgoCD Configuration
+
+Edit `iac/infrastructure-live/prod/eu-north-1/prod/kubernetes_bootstrap/env-argocd/values.yaml`:
+
+```yaml
+configs:
+  repositories:
+    private-helm-repo:
+      url: https://github.com/YOUR-GITHUB-ORG/YOUR-REPO-NAME.git  # Replace with your repository
+```
+
+Edit `iac/infrastructure-live/prod/eu-north-1/prod/kubernetes_bootstrap/env-argocd-apps/values.yaml`:
+
+```yaml
+applications:
+  YOUR-APP-NAME:  # Replace with your application name
+    source:
+      repoURL: https://github.com/YOUR-GITHUB-ORG/YOUR-REPO-NAME.git
+      path: infra/kubernetes/charts/YOUR-APP-CHART-PATH
+```
+
+### Step 6: Update CodeBuild Configuration
 
 Edit `iac/infrastructure-live/prod/eu-north-1/prod/codebuild/YOUR-PROJECT-NAME-env-core/terragrunt.hcl`:
 
 ```hcl
-source_location = "https://github.com/umairedu/boilerplate-aws-terragrunt.git"  # Replace with your repository
+source_location = "https://github.com/YOUR-GITHUB-ORG/YOUR-REPO-NAME.git"  # Replace with your repository
 ```
 
 ## Quick Start
@@ -204,6 +233,13 @@ This will deploy:
 - Security groups
 - IAM roles and policies
 - CodeBuild project
+- **Kubernetes bootstrap components** (automatically installed after EKS is ready):
+  - ArgoCD (GitOps)
+  - AWS Load Balancer Controller
+  - Cluster Autoscaler
+  - Kubernetes namespaces and service accounts
+
+**Note**: The Kubernetes bootstrap components are automatically deployed after the EKS cluster is ready. This includes ArgoCD, which will be available for GitOps deployments.
 
 ### 2. Configure Kubernetes Access
 
@@ -214,18 +250,41 @@ aws eks --region eu-north-1 update-kubeconfig --name <your-cluster-name>
 kubectl get nodes
 ```
 
-### 3. Deploy Your First Application
+### 3. Access ArgoCD (Auto-installed)
 
+ArgoCD is automatically installed during infrastructure deployment. Access it:
+
+```bash
+# Port forward to ArgoCD server
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+
+# Get admin password
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+```
+
+Access ArgoCD UI at `https://localhost:8080` (username: `admin`)
+
+### 4. Deploy Your First Application
+
+You can deploy applications either via Helm or ArgoCD:
+
+**Option A: Using Helm directly**
 ```bash
 cd kubernetes/charts/generic-chart
 helm install my-app . -f core/production/values.yaml
 ```
 
-### 4. Verify Deployment
+**Option B: Using ArgoCD (GitOps)**
+Update `kubernetes_bootstrap/env-argocd-apps/values.yaml` with your application details, then ArgoCD will automatically sync from your Git repository.
+
+### 5. Verify Deployment
 
 ```bash
 # Check pods
-kubectl get pods
+kubectl get pods --all-namespaces
+
+# Check ArgoCD applications
+kubectl get applications -n argocd
 
 # Check services
 kubectl get svc
@@ -252,13 +311,21 @@ boilerplate-aws-terragrunt/
 │   │               ├── ec2/         # EC2 instances (bastion host)
 │   │               ├── ecr/         # Container registries
 │   │               ├── kms/         # KMS keys for encryption
+│   │               ├── iam-role/    # IAM roles for service accounts
+│   │               ├── iam-policy/  # IAM policies for service accounts
 │   │               ├── iam-group/   # IAM groups and roles
 │   │               ├── security-groups/  # Security groups
 │   │               ├── secrets-manager/  # AWS Secrets Manager
 │   │               ├── codebuild/   # CI/CD pipelines
+│   │               ├── kubernetes/  # Kubernetes resources (namespaces, service accounts)
+│   │               ├── kubernetes_bootstrap/  # Bootstrap installations (ArgoCD, ALB, Autoscaler)
 │   │               └── datasources/     # AWS data sources
 │   └── infrastructure-modules/     # Reusable Terraform modules
 │       ├── codebuild/               # CodeBuild module
+│       ├── helm/                    # Helm release module
+│       ├── kubernetes/              # Kubernetes resource modules
+│       │   ├── namespace/          # Namespace module
+│       │   └── serviceaccount/     # ServiceAccount module
 │       └── datasources/             # Data sources module
 ├── kubernetes/
 │   └── .sops.yaml                   # SOPS encryption configuration
@@ -333,7 +400,20 @@ This project uses a hierarchical Terragrunt configuration structure:
 - **Endpoint Access**: Public endpoint access enabled
 - **Authentication**: API mode with access entries
 - **Node Groups**: Auto-scaling node groups (1-15 nodes) with spot instances
-- **Features**: Cluster autoscaler, EBS encryption, ECR and EBS CSI driver policies
+
+#### Kubernetes Bootstrap Components (Auto-installed)
+After EKS cluster is ready, the following components are automatically installed:
+- **ArgoCD**: GitOps continuous delivery tool (v9.0.3)
+  - Configured with SOPS support for secret decryption
+  - IAM role for accessing KMS keys
+  - Pre-configured with Helm secrets plugin
+- **AWS Load Balancer Controller**: Manages AWS Application Load Balancers (v1.8.3)
+  - IAM role for managing ALB resources
+  - Service account in kube-system namespace
+- **Cluster Autoscaler**: Automatically scales node groups (v9.40.0)
+  - IAM role for managing Auto Scaling Groups
+  - Service account in kube-system namespace
+- **ArgoCD Applications**: Pre-configured application definitions for GitOps
 
 #### EC2 Bastion Host
 - Secure jump host for accessing private resources
@@ -387,27 +467,44 @@ kubectl get svc my-application
 
 ### ArgoCD Integration
 
-For GitOps deployments, configure ArgoCD to sync from your Git repository:
+ArgoCD is automatically installed during infrastructure deployment. To configure your applications:
 
-1. **Install ArgoCD** (if not already installed):
-   ```bash
-   kubectl create namespace argocd
-   kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+1. **Update ArgoCD Application Configuration**:
+   Edit `iac/infrastructure-live/prod/eu-north-1/prod/kubernetes_bootstrap/env-argocd-apps/values.yaml`:
+   ```yaml
+   applications:
+     YOUR-APP-NAME:  # Replace with your application name
+       namespace: argocd
+       project: default
+       source:
+         repoURL: https://github.com/YOUR-GITHUB-ORG/YOUR-REPO-NAME.git
+         targetRevision: main
+         path: infra/kubernetes/charts/YOUR-APP-CHART-PATH
+         helm:
+           valueFiles:
+             - YOUR-APP-NAME/production/values.yaml
+             - secrets://YOUR-APP-NAME/production/values-enc.yaml
+       destination:
+         server: https://kubernetes.default.svc
+         namespace: default
    ```
 
 2. **Access ArgoCD UI**:
    ```bash
    kubectl port-forward svc/argocd-server -n argocd 8080:443
    ```
-   Access at `https://localhost:8080`
+   Access at `https://localhost:8080` (username: `admin`)
 
 3. **Get Admin Password**:
    ```bash
    kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
    ```
 
-4. **Create Application**:
-   Use the ArgoCD UI or CLI to create an application pointing to your Helm chart repository.
+4. **ArgoCD Features**:
+   - Pre-configured with SOPS support for secret decryption
+   - IAM role for accessing KMS keys
+   - Helm secrets plugin pre-installed
+   - Applications sync automatically from Git repository
 
 ### Secrets Management
 
@@ -481,7 +578,7 @@ helm status <release-name>
 
 Make sure the KMS key ARN in `kubernetes/.sops.yaml` matches the key created by the KMS module. You can get the key ARN after deploying the KMS infrastructure.
 
-### Useful Commands
+### Some Useful Aliases 
 
 ```bash
 # Terragrunt aliases (add to your ~/.zshrc or ~/.bashrc)
