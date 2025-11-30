@@ -1,7 +1,5 @@
 # AWS Kubernetes Infrastructure Boilerplate with Terragrunt
 
-> **Boilerplate for deploying infrastructure and applications on AWS EKS using Terragrunt, Helm, and ArgoCD.**
-
 ## Intro
 
 This boilerplate provides a complete foundation for deploying and managing infrastructure and containerized applications on AWS.
